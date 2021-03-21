@@ -62,6 +62,7 @@ vnoremap H ^
 vnoremap L $
 vnoremap J 5j
 vnoremap K 5k
+vnoremap d "+d
 
 map <LEADER>sc :set spell!<CR>
 map <LEADER>rc :e $MYVIMRC<CR>
@@ -153,8 +154,6 @@ call plug#begin('~/.config/nvim/plugged')
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'ajmwagar/vim-deus'
-Plug 'joshdick/onedark.vim'
-Plug 'connorholyday/vim-snazzy'
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'luochen1990/rainbow'
 Plug 'tpope/vim-surround'
@@ -162,8 +161,10 @@ Plug 'easymotion/vim-easymotion'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'jiangmiao/auto-pairs'
 Plug 'kdheepak/lazygit.vim', { 'branch': 'nvim-v0.4.3' }
-
-
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+Plug 'sainnhe/sonokai'
 call plug#end()
 
 " ===
@@ -172,13 +173,15 @@ call plug#end()
 set t_Co=256
 set termguicolors
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-set background=dark    " Setting dark mode
+set background=dark
 "colorscheme deus
-"colorscheme snazzy
-"colorscheme onedark
-colorscheme dracula
-"let g:SnazzyTransparent = 1
-let g:deus_termcolors=256
+"colorscheme dracula
+let g:sonokai_style="maia"
+let g:sonokai_cursor = 'green'
+let g:sonokai_transparent_background = 1
+let g:sonokai_better_performance = 1
+colorscheme sonokai
+"let g:deus_termcolors=256
 hi Normal ctermfg=252 ctermbg=none
 highlight Normal guibg=NONE ctermbg=None
 
@@ -213,6 +216,12 @@ nmap s <Plug>(easymotion-overwin-f)
 
 
 " ===
+" === auto-pairs
+" ===
+let g:AutoPairsMapCh=0
+let g:AutoPairsMapCR=0
+
+" ===
 " === lazygit.nvim
 " ===
 noremap <c-g> :LazyGit<CR>
@@ -222,5 +231,79 @@ let g:lazygit_floating_window_corner_chars = ['╭', '╮', '╰', '╯'] " cust
 let g:lazygit_use_neovim_remote = 1 " for neovim-remote support
 
 
+" ===
+" === coc.nvm
+" ===
+"
+let g:coc_global_extensions = [
+    \ 'coc-translator',
+    \ 'coc-yank',
+    \ 'coc-syntax',
+    \ 'coc-html',
+    \ 'coc-css',
+    \ 'coc-explorer',
+    \ 'coc-json',
+    \ 'coc-vimlsp']
+set updatetime=100
+set shortmess+=c
+if has("patch-8.1.1564")
+  " Recently vim can merge signcolumn and number column into one
+  set signcolumn=number
+else
+  set signcolumn=yes
+endif
 
+" Use tab for trigger completion with characters ahead and navigate.
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+inoremap <silent><expr> <C-s> coc#refresh()
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+nmap <leader>rn <Plug>(coc-rename)
+nmap tt :CocCommand explorer<CR>
+nmap ts <Plug>(coc-translator-p)
+
+"nnoremap <silent> <leader>h :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
+  else
+    execute '!' . &keywordprg . " " . expand('<cword>')
+  endif
+endfunction
+
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+
+" ===
+" === ultisnips
+" ===
+"
+let g:UltiSnipsExpandTrigger="<c-e>"
+let g:UltiSnipsJumpForwardTrigger="<c-e>"
+let g:UltiSnipsJumpBackwardTrigger="<c-q>"
+let g:UltiSnipsEditSplit="vertical"
+let g:UltiSnipsSnippetDirectories = [$HOME.'/.config/nvim/Ultisnips/', $HOME.'/.config/nvim/plugged/vim-snippets/UltiSnips/']
 

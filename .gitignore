@@ -1,7 +1,2 @@
-#Exclude all files
-*
-
-#Do not exclude files
-!init.vim
-!.gitignore
-!README.md
+tmp
+.netrwhist
